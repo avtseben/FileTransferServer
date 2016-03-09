@@ -15,7 +15,7 @@ public class SocketHandler implements  Runnable {
             connCount++;
             System.out.println("User " + connCount + " connected and works in " + Thread.currentThread().getName());
 	
-	    new CatchFile(inStream).writeByChars();
+	    new CatchFile(inStream,outStream).transferManager();
 
             System.out.println("User " + connCount + " disconnected in " + Thread.currentThread().getName());
             inStream.close();

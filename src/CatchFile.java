@@ -3,44 +3,43 @@ import java.io.*;
 public class CatchFile {
 
 private InputStream inStream; //inputstream it just bytes
-private FileOutputStream fos;
-private boolean byteTransferMode = false;
-private BufferedReader in;
-private PrintWriter out;
-private String file;
+private OutputStream outStream; //inputstream it just bytes
+private String fileName;
     
-    CatchFile (InputStream _inStream) {
-	file = "file";
+    CatchFile (InputStream _inStream, OutputStream _outStream) {
+	fileName = new String();
 	inStream = _inStream;
-	try {
-	    in = new BufferedReader(
-        	new InputStreamReader(inStream));
-	    out = new PrintWriter(
-		new BufferedWriter(
-	    new FileWriter(file)), true);//AutoFlush
-
-    	    fos = new FileOutputStream(file);
+	outStream = _outStream;
+    }
+    public void transferManager() {
+	try (
+	     PrintWriter out = new PrintWriter(outStream, true);
+	     BufferedReader in = new BufferedReader(
+		   new InputStreamReader(inStream));
+		       
+	) {
+	    out.println("sayFileName");
+	    if(in.readLine().equals("fileNameIs")) 
+		//fileName = "file";
+		fileName = in.readLine();
+	    out.println("youCanStartTransfer");
+	    writeToFileFromSocket(in); 
 	} catch (IOException e) {
+	    System.err.println(e);	
 	}
-
     }
 
-   public void writeByChars() {
-    try {
-	char c;
+   public void writeToFileFromSocket(BufferedReader _in) {
+    try (
+	    PrintWriter outFile = new PrintWriter(
+		new BufferedWriter(
+	            new FileWriter(fileName)), true);//AutoFlush
+	) {
 	String inLine = new String();
 	while(true) {
-	    if(byteTransferMode) {
-	    c = (char)inStream.read();
-	    fos.write(c);
-	    if(c == 'Q') break; //TODO get EOF 
-	    } else {
-		if((inLine = in.readLine()) == null) break;
-		out.println(inLine);
-	    }
+	    if((inLine = _in.readLine()) == null) break;
+	    outFile.println(inLine);
 	}
-	out.close();
-	fos.close();
     } catch (IOException e) {}
    }
 }
